@@ -5,6 +5,7 @@ clc
 p = system(['svn info ', pwd]);
 if (p == 1)
     disp('fare il checkout da: https://github.com/pcm-dpc/COVID-19.git');
+    return
 end
 %system(['svn update ', pwd]);
 addpath('dati-province\');
@@ -16,7 +17,7 @@ a = input(prompt);
 
 if (a == 1)
     dpccovid19 = readtable('dati-province\dpc-covid19-ita-province.csv');
-    prompt = 'Selezionare la procinca Siena (SI), Milano (MI)...\n';
+    prompt = 'Selezionare la provinca Siena (SI), Milano (MI)...\n';
     b = input(prompt, 's');
     rows = (dpccovid19.sigla_provincia == string(b)); 
     city = dpccovid19(rows,:);
