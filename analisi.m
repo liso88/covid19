@@ -4,7 +4,7 @@ clc
 
 p = system(['svn info ', pwd]);
 if (p == 1)
-    disp('fare il checkout');
+    disp('fare il checkout da: https://github.com/pcm-dpc/COVID-19.git');
 end
 %system(['svn update ', pwd]);
 addpath('dati-province\');
