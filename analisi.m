@@ -18,7 +18,7 @@ if (a == 1)
     dpccovid19 = readtable('dati-province\dpc-covid19-ita-province.csv');
     prompt = 'Selezionare la procinca Siena (SI), Milano (MI)...\n';
     b = input(prompt, 's');
-    rows = (dpccovid19.sigla_provincia == string(b)); %% 52 Siena, 109 Fermo 48 Firenze
+    rows = (dpccovid19.sigla_provincia == string(b)); 
     city = dpccovid19(rows,:);
     cityNames = city.denominazione_provincia;
     
@@ -26,13 +26,13 @@ elseif (a == 2)
     dpccovid19 = readtable('dati-regioni\dpc-covid19-ita-regioni.csv');
     prompt = 'Selezionare la Regione: \n';
     b = input(prompt,'s');
-    rows = (dpccovid19.denominazione_regione == string(b)); %% 52 Siena, 109 Fermo 48 Firenze
+    rows = (dpccovid19.denominazione_regione == string(b)); 
     city = dpccovid19(rows,:);
     cityNames = city.denominazione_regione;
     
 else
     dpccovid19 = readtable('dati-andamento-nazionale\dpc-covid19-ita-andamento-nazionale.csv');
-    rows = (dpccovid19.stato == "ITA"); %% 52 Siena, 109 Fermo 48 Firenze
+    rows = (dpccovid19.stato == "ITA"); 
     city = dpccovid19(rows,:);
     cityNames{1,1} = 'Italia';
     
@@ -54,11 +54,11 @@ plot(Date,giornalieri, 'r')
 %cftool
 close all
 
-%%
+%% Fitting
 x= tempi';
 y= totali;
-% Define function that will be used to fit data: % a/(1+ exp(-k*(x-b)))
 
+% Define function that will be used to fit data: % a/(1+ exp(-k*(x-b)))
 % (F is a vector of fitting parameters)
 f = @(F,x) F(1) ./ (1 +  exp(-F(2).*(x - F(3))));
 
@@ -71,6 +71,7 @@ picco = find(d2==0,1);
 
 % Display fitted coefficients
 disp(['F = ',num2str(F_fitted)]);
+
 % Plot the data and fit
 figure(1)
 x_ = x + Date(1);
