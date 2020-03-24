@@ -3,5 +3,5 @@ Questo repository contiene uno script matlab per la visualizzazione e l'analisi 
 
 
 ## Utilizzo
-1- Eseguire il checkout del repository ufficiale della protezione civile: https://github.com/pcm-dpc/COVID-19
-2- Copiare nella root del repository questo file
+1. Eseguire il checkout del repository ufficiale della protezione civile: https://github.com/pcm-dpc/COVID-19
+2. Copiare nella root del repository questo file
