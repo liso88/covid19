@@ -46,7 +46,11 @@ newStr = split(C," ");
 Date= datetime(newStr(:,1));
 giornalieri = [0; diff(city.totale_casi)];
 totali = city.totale_casi;
-
+if exist('city.tamponi')
+    tamponi = city.tamponi;
+else
+    tamponi = ones(1, length(giornalieri));
+end
 
 tempi = [0 :length(Date)-1];
 plot(Date,city.totale_casi)
@@ -122,11 +126,11 @@ legend('-2 giorni','ieri', 'oggi');
 %% incremento giornaliero
 
 figure
+
 %f = @(F,x) F(1) ./ (1 +  exp(-F(2).*(x - F(3))));
 %f(x) =  F(1).*exp(-((x-F(2))./F(3)).^2)
-
+giornalieri(giornalieri<0) = 0;
 fg = @(F,x) F(1).*exp(-((x-F(2))./F(3)).^2);
-Fg_fitted = nlinfit(x,giornalieri,fg,[5805 1.807 1.56]);
 fgiorn = fit(x,giornalieri,'gauss1');
 fgiorn2 = fit(x,giornalieri,'gauss2');
 
