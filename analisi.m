@@ -2,16 +2,21 @@ close all
 clear all
 clc
 
+%% check svn
 p = system(['svn info ', pwd]);
 if (p == 1)
     disp('fare il checkout da: https://github.com/pcm-dpc/COVID-19.git');
-    return
+  %  return
 end
 %system(['svn update ', pwd]);
+
+%% importazione dati
+
 addpath('dati-province\');
 addpath('dati-regioni\');
 addpath('dati-andamento-nazionale\');
 
+%% selezione dati di interesse
 prompt = 'Selezionare:\n 1 per provincia \n 2 per regione \n 3 Nazionale \n';
 a = input(prompt);
 
@@ -35,21 +40,24 @@ else
     dpccovid19 = readtable('dati-andamento-nazionale\dpc-covid19-ita-andamento-nazionale.csv');
     rows = (dpccovid19.stato == "ITA"); 
     city = dpccovid19(rows,:);
-    cityNames{1,1} = 'Italia';
-    
-    
+    cityNames{1,1} = 'Italia'; 
 end
+
+%% estrazione dati
 
 cityName  = cityNames {1,1};
 C = cellstr(city.data);
 newStr = split(C," ");
 Date= datetime(newStr(:,1));
 giornalieri = [0; diff(city.totale_casi)];
+giornalieri(giornalieri<0) = 0; %% errori in alcune province (Arezzo, Viterbo...)
+
 totali = city.totale_casi;
-if exist('city.tamponi')
+
+if ismember('tamponi',city.Properties.VariableNames)
     tamponi = city.tamponi;
 else
-    tamponi = ones(1, length(giornalieri));
+    tamponi = ones(length(giornalieri),1);
 end
 
 tempi = [0 :length(Date)-1];
@@ -59,7 +67,10 @@ plot(Date,giornalieri, 'r')
 %cftool
 close all
 
+timeHorizon = 60;
 %% Fitting
+%andamento totale
+
 x= tempi';
 y= totali;
 
@@ -68,7 +79,6 @@ y= totali;
 f = @(F,x) F(1) ./ (1 +  exp(-F(2).*(x - F(3))));
 
 F_fitted = nlinfit(x,y,f,[0 0 0]);
-timeHorizon = 60;
 previsione = f(F_fitted,[0:timeHorizon]);
 tt = [0:timeHorizon];
 d2 = (diff(diff(previsione))>0);
@@ -93,11 +103,11 @@ title('previsione per '+ string(cityName))
 
 %% confronto andamento 3 giorni
 figure
+hold on
 title('Confronto di 3 giorni per '+ string(cityName))
 y2 = y(1:end-2);
 y1 = y(1:end-1);
 plot(x_,y,'*')
-hold on
 
 x2= x(1:end-2);
 x1= x(1:end-1);
@@ -134,8 +144,6 @@ fg = @(F,x) F(1).*exp(-((x-F(2))./F(3)).^2);
 fgiorn = fit(x,giornalieri,'gauss1');
 fgiorn2 = fit(x,giornalieri,'gauss2');
 
-timeHorizon = 60;
-
 previsione2 = feval(fgiorn,[0: timeHorizon]);
 previsione3 = feval(fgiorn2,[0: timeHorizon]);
 
@@ -147,10 +155,62 @@ plot([Date(1) : Date(1)+timeHorizon],previsione2, 'g');
 plot([Date(1) : Date(1)+timeHorizon],previsione3, 'b');
 plot([Date(1) : Date(1)+timeHorizon],smooth(previsione3,3), '--b');
 
-
-[picco, i] = max(diff(previsione));
-plot((Date(1) +i),picco,'-p','MarkerFaceColor','red', 'MarkerSize',15);
 legend('data','derivata logistica.','gauss1', 'gauss2','gauss2 smooth3');
 xlabel('Giorni')
-ylabel('Casi totali')
-title('previsione per '+ string(cityName))
+ylabel('Casi Giornalieri')
+title('Incremento giornaliero per '+ string(cityName))
+
+%% rispetto ai tamponi
+giornalieriSuTamponi = giornalieri./tamponi;
+totaliSuTamponi = totali./tamponi;
+
+% andamento totale
+% fitting logistica
+
+y= totaliSuTamponi;
+f = @(F,x) F(1) ./ (1 +  exp(-F(2).*(x - F(3))));
+F_fitted = nlinfit(x,y,f,[0 0 0]);
+
+previsione = f(F_fitted,[0:timeHorizon]);
+
+% Plot the data and fit
+figure
+x_ = x + Date(1);
+plot(x_,y,'*')
+hold on
+plot(x_,f(F_fitted,x),'g');
+plot([Date(1) : Date(1)+timeHorizon],previsione, '--r');
+%picco
+plot((Date(1) +picco),f(F_fitted,picco),'-p','MarkerFaceColor','red', 'MarkerSize',15);
+legend('data','fit', 'previsione');
+xlabel('Giorni')
+ylabel('Casi totali / Tamponi')
+title('Totali e previsione per '+ string(cityName) + ' rispetto ai tamponi')
+
+
+% andamento giornaliero rispettoai tamponi
+
+figure
+fg = @(F,x) F(1).*exp(-((x-F(2))./F(3)).^2);
+fgiorn = fit(x,giornalieriSuTamponi,'gauss1');
+fgiorn2 = fit(x,giornalieriSuTamponi,'gauss2');
+
+previsione2 = feval(fgiorn,[0: timeHorizon]);
+previsione3 = feval(fgiorn2,[0: timeHorizon]);
+
+plot(x_,giornalieriSuTamponi,'*k')
+hold on
+%plot(x_,[0; diff(f(F_fitted,x))],'g');
+plot([Date(1) : Date(1)+timeHorizon],[0 diff(previsione)], 'r');
+plot([Date(1) : Date(1)+timeHorizon],previsione2, 'g');
+plot([Date(1) : Date(1)+timeHorizon],previsione3, 'b');
+plot([Date(1) : Date(1)+timeHorizon],smooth(previsione3,3), '--b');
+
+
+legend('data','derivata logistica.','gauss1', 'gauss2','gauss2 smooth3');
+xlabel('Giorni')
+ylabel('Casi Giornalieri / tampni')
+title('Andamento giornaliero per '+ string(cityName) +'rispetto ai tamponi')
+
+
+
