@@ -12,16 +12,16 @@ end
 
 %% importazione dati
 
-addpath('dati-province\');
-addpath('dati-regioni\');
-addpath('dati-andamento-nazionale\');
+addpath('dati-province/');
+addpath('dati-regioni/');
+addpath('dati-andamento-nazionale/');
 
 %% selezione dati di interesse
 prompt = 'Selezionare:\n 1 per provincia \n 2 per regione \n 3 Nazionale \n';
 a = input(prompt);
 
 if (a == 1)
-    dpccovid19 = readtable('dati-province\dpc-covid19-ita-province.csv');
+    dpccovid19 = readtable('dati-province/dpc-covid19-ita-province.csv');
     prompt = 'Selezionare la provinca Siena (SI), Milano (MI)...\n';
     b = input(prompt, 's');
     rows = (dpccovid19.sigla_provincia == string(b)); 
@@ -29,7 +29,7 @@ if (a == 1)
     cityNames = city.denominazione_provincia;
     
 elseif (a == 2)
-    dpccovid19 = readtable('dati-regioni\dpc-covid19-ita-regioni.csv');
+    dpccovid19 = readtable('dati-regioni/dpc-covid19-ita-regioni.csv');
     prompt = 'Selezionare la Regione: \n';
     b = input(prompt,'s');
     rows = (dpccovid19.denominazione_regione == string(b)); 
@@ -37,7 +37,7 @@ elseif (a == 2)
     cityNames = city.denominazione_regione;
     
 else
-    dpccovid19 = readtable('dati-andamento-nazionale\dpc-covid19-ita-andamento-nazionale.csv');
+    dpccovid19 = readtable('dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv');
     rows = (dpccovid19.stato == "ITA"); 
     city = dpccovid19(rows,:);
     cityNames{1,1} = 'Italia'; 
@@ -47,7 +47,7 @@ end
 
 cityName  = cityNames {1,1};
 C = cellstr(city.data);
-newStr = split(C," ");
+newStr = split(C,"T");
 Date= datetime(newStr(:,1));
 giornalieri = [0; diff(city.totale_casi)];
 giornalieri(giornalieri<0) = 0; %% errori in alcune province (Arezzo, Viterbo...)
