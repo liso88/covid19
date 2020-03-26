@@ -198,7 +198,7 @@ if (a~= 1)
     plot((Date(1) +picco),f(F_fitted,picco),'-p','MarkerFaceColor','red', 'MarkerSize',15);
     legend('data','fit', 'previsione');
     xlabel('Giorni')
-    ylabel('Casi totali / Tamponi')
+    ylabel('Casi totali / Tamponi (%)')
     title('Totali e previsione per '+ string(cityName) + ' rispetto ai tamponi')
     
     
@@ -223,6 +223,6 @@ if (a~= 1)
     
     legend('data','derivata logistica.','gauss1', 'gauss2','gauss2 smooth3');
     xlabel('Giorni')
-    ylabel('Casi Giornalieri / tampni')
+    ylabel('Casi Giornalieri / tamponi (%)')
     title('Andamento giornaliero per '+ string(cityName) +' rispetto ai tamponi')
 end
