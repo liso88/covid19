@@ -6,11 +6,11 @@ clc
 if ismac
     [status, data_path] = system('pwd');
     system(['svn up ', data_path]);
-    data_path  = strcat(data_path(1:(end-18)),'COVID/trunk')
+    data_path  = strcat(data_path(1:(end-18)),'COVID-19.git/trunk')
 else
     [status, data_path] = system('cd');
     system(['svn update ', data_path]);
-    data_path  = strcat(data_path(1:(end-17)),'COVID/trunk')
+    data_path  = strcat(data_path(1:(end-17)),'COVID-19.git/trunk')
 end
     p = system(['svn info ', data_path]);
 
@@ -19,9 +19,9 @@ if (p == 1)
 end
 %% importazione dati
 
-addpath('../../COVID/trunk/dati-province/');
-addpath('../../COVID/trunk/dati-regioni/');
-addpath('../../COVID/trunk/dati-andamento-nazionale/');
+addpath('../../COVID-19.git/trunk/dati-province/');
+addpath('../../COVID-19.git/trunk/dati-regioni/');
+addpath('../../COVID-19.git/trunk/dati-andamento-nazionale/');
 
 %% selezione dati di interesse
 prompt = 'Selezionare:\n 1 per provincia \n 2 per regione \n 3 Nazionale \n';
